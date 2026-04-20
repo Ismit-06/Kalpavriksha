@@ -6,6 +6,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import Navbar from './components/Navbar';
+import Footer from './components/Footer';
 import LandingPage from './pages/LandingPage';
 import RegisterFarmer from './pages/RegisterFarmer';
 import RegisterBuyer from './pages/RegisterBuyer';
@@ -30,6 +31,7 @@ export default function App() {
               <Route path="/admin" element={<AdminDashboard />} />
             </Routes>
           </main>
+          <Footer />
           <Toaster 
             position="bottom-right"
             toastOptions={{

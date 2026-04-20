@@ -37,6 +37,11 @@ export default function Navbar() {
           <div className="flex items-center gap-4">
             {!user ? (
               <>
+                <div className="hidden lg:flex items-center gap-6 mr-4 pr-6 border-r border-gray-200">
+                  <a href="/#about" className="text-gray-600 hover:text-primary font-medium transition-colors">About</a>
+                  <a href="/#how-it-works" className="text-gray-600 hover:text-primary font-medium transition-colors">How it Works</a>
+                  <a href="/#benefits" className="text-gray-600 hover:text-primary font-medium transition-colors">Benefits</a>
+                </div>
                 <Link to="/register-farmer" className="text-earth hover:text-primary font-medium px-3 py-2 rounded-md transition-colors hidden sm:block">
                   Farmers
                 </Link>
