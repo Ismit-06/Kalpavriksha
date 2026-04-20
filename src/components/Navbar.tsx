@@ -32,7 +32,7 @@ export default function Navbar() {
             <div className="bg-primary/10 p-2 rounded-xl group-hover:bg-primary/20 transition-colors">
               <Leaf className="text-primary w-7 h-7" />
             </div>
-            <span className="font-extrabold text-2xl text-primary tracking-tight">AgriConnect</span>
+            <span className="font-extrabold text-2xl text-primary tracking-tight">Kalpavriksha</span>
           </Link>
           <div className="flex items-center gap-4">
             {!user ? (

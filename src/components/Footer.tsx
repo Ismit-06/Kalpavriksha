@@ -10,7 +10,7 @@ export default function Footer() {
           <div className="space-y-4">
             <Link to="/" className="flex items-center gap-2">
               <Leaf className="text-primary w-6 h-6" />
-              <span className="font-extrabold text-xl text-white tracking-tight">AgriConnect</span>
+              <span className="font-extrabold text-xl text-white tracking-tight">Kalpavriksha</span>
             </Link>
             <p className="text-sm text-gray-400">
               Transforming the agricultural supply chain by connecting farmers directly to commercial kitchens and retail spaces.
@@ -60,14 +60,14 @@ export default function Footer() {
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="w-5 h-5 text-primary shrink-0" />
-                <span>support@agriconnect.com</span>
+                <span>support@kalpavriksha.com</span>
               </li>
             </ul>
           </div>
         </div>
         
         <div className="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row items-center justify-between text-sm text-gray-500">
-          <p>&copy; {new Date().getFullYear()} AgriConnect. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Kalpavriksha. All rights reserved.</p>
           <p className="mt-2 md:mt-0">Designed for a sustainable future.</p>
         </div>
       </div>

@@ -63,7 +63,7 @@ export default function Login() {
           className="max-w-md w-full bg-white p-8 rounded-3xl shadow-lg border border-accent text-center"
         >
           <h2 className="text-3xl font-bold text-primary mb-4">Complete Your Profile</h2>
-          <p className="text-gray-600 mb-8">Welcome! Please choose how you want to use AgriConnect.</p>
+          <p className="text-gray-600 mb-8">Welcome! Please choose how you want to use Kalpavriksha.</p>
           <div className="flex flex-col gap-4">
             <Link to="/register-farmer" className="w-full bg-secondary hover:bg-primary text-white p-4 rounded-xl font-bold transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5">
               I am a Farmer
@@ -93,7 +93,7 @@ export default function Login() {
         className="max-w-md w-full bg-white p-8 rounded-3xl shadow-lg border border-accent text-center"
       >
         <h2 className="text-3xl font-bold text-primary mb-2">Welcome Back</h2>
-        <p className="text-gray-600 mb-8">Sign in to your AgriConnect account.</p>
+        <p className="text-gray-600 mb-8">Sign in to your Kalpavriksha account.</p>
         
         <button 
           onClick={handleGoogleLogin}
