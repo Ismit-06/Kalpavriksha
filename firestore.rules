@@ -1,0 +1,124 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    // Collection: users
+    // Document ID: {userId} (matches Firebase Auth UID)
+    // Fields:
+    //   - uid: string (required)
+    //   - role: string (required, 'farmer' or 'business' or 'admin')
+    //   - name: string (required)
+    //   - email: string (required)
+    //   - createdAt: timestamp (required)
+    //   - location: string (optional)
+    //   - farmSize: number (optional)
+    //   - crops: list (optional)
+    //   - yieldCapacity: string (optional)
+    //   - businessName: string (optional)
+    //   - businessType: string (optional)
+    //   - contactPerson: string (optional)
+    // Collection: inventory
+    // Document ID: auto-generated
+    // Fields:
+    //   - farmerId: string (required, matches Firebase Auth UID)
+    //   - cropName: string (required)
+    //   - quantity: number (required)
+    //   - unit: string (required)
+    //   - price: number (required)
+    //   - updatedAt: timestamp (required)
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+        (
+          (request.auth.token.email == "ismittripathyit@gmail.com" && request.auth.token.email_verified == true) ||
+          (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin')
+        );
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function uidUnchanged() {
+      return !('uid' in request.resource.data) || request.resource.data.uid == request.auth.uid;
+    }
+
+    function uidNotModified() {
+      return !('uid' in request.resource.data) || request.resource.data.uid == resource.data.uid;
+    }
+
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+
+    function isValidEmail(email) {
+      return email is string && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    function isValidUser(data) {
+      return hasRequiredFields(['uid', 'role', 'name', 'email', 'createdAt']) &&
+             data.uid is string && data.uid.size() > 0 && data.uid.size() < 100 &&
+             data.role in ['farmer', 'business', 'admin'] &&
+             data.name is string && data.name.size() > 0 && data.name.size() < 100 &&
+             isValidEmail(data.email) &&
+             data.createdAt is timestamp &&
+             (!('location' in data) || (data.location is string && data.location.size() < 200)) &&
+             (!('farmSize' in data) || data.farmSize is number) &&
+             (!('crops' in data) || (data.crops is list && data.crops.size() < 50)) &&
+             (!('yieldCapacity' in data) || (data.yieldCapacity is string && data.yieldCapacity.size() < 100)) &&
+             (!('businessName' in data) || (data.businessName is string && data.businessName.size() < 100)) &&
+             (!('businessType' in data) || (data.businessType is string && data.businessType.size() < 100)) &&
+             (!('contactPerson' in data) || (data.contactPerson is string && data.contactPerson.size() < 100));
+    }
+
+    function isValidInventoryItem(data) {
+      return hasRequiredFields(['farmerId', 'cropName', 'quantity', 'unit', 'price', 'updatedAt']) &&
+             data.farmerId is string && data.farmerId == request.auth.uid &&
+             data.cropName is string && data.cropName.size() > 0 && data.cropName.size() < 100 &&
+             data.quantity is number && data.quantity >= 0 &&
+             data.unit is string && data.unit.size() > 0 && data.unit.size() < 20 &&
+             data.price is number && data.price >= 0 &&
+             data.updatedAt is timestamp;
+    }
+
+    match /users/{userId} {
+      // Users can only read their own profile, admins can read all
+      allow read: if isOwner(userId) || isAdmin();
+      
+      // Users can create their own profile. Only admins can create an admin profile (or the default admin).
+      allow create: if isOwner(userId) && isValidUser(request.resource.data) && uidUnchanged() && 
+                    (request.resource.data.role != 'admin' || isAdmin());
+      
+      // Users can update their own profile, but cannot change their uid or createdAt
+      allow update: if (isOwner(userId) && isValidUser(request.resource.data) && uidNotModified() && request.resource.data.createdAt == resource.data.createdAt && (request.resource.data.role == resource.data.role || isAdmin())) || isAdmin();
+      
+      // Only admins can delete users
+      allow delete: if isAdmin();
+    }
+
+    match /inventory/{itemId} {
+      // Anyone authenticated can read inventory (buyers need to see it)
+      allow read: if isAuthenticated();
+      
+      // Farmers can create inventory items
+      allow create: if isAuthenticated() && isValidInventoryItem(request.resource.data);
+      
+      // Farmers can update their own inventory items, Admins can update any
+      allow update: if (isAuthenticated() && resource.data.farmerId == request.auth.uid && isValidInventoryItem(request.resource.data)) || isAdmin();
+      
+      // Farmers can delete their own inventory items, Admins can delete any
+      allow delete: if (isAuthenticated() && resource.data.farmerId == request.auth.uid) || isAdmin();
+    }
+  }
+}

@@ -1,0 +1,100 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "A registered user on the platform (Farmer or Business)",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Firebase Auth UID"
+        },
+        "role": {
+          "type": "string",
+          "enum": ["farmer", "business"],
+          "description": "User role"
+        },
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string",
+          "format": "email"
+        },
+        "createdAt": {
+          "type": "timestamp"
+        },
+        "location": {
+          "type": "string"
+        },
+        "farmSize": {
+          "type": "number",
+          "description": "Farm size in acres (for farmers)"
+        },
+        "crops": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Primary crops grown (for farmers)"
+        },
+        "yieldCapacity": {
+          "type": "string",
+          "description": "Expected monthly yield (for farmers)"
+        },
+        "businessName": {
+          "type": "string",
+          "description": "Name of the business (for buyers)"
+        },
+        "businessType": {
+          "type": "string",
+          "description": "Type of business (for buyers)"
+        },
+        "contactPerson": {
+          "type": "string",
+          "description": "Contact person name (for buyers)"
+        }
+      },
+      "required": ["uid", "role", "name", "email", "createdAt"]
+    },
+    "InventoryItem": {
+      "title": "Inventory Item",
+      "description": "An item in a farmer's inventory",
+      "type": "object",
+      "properties": {
+        "farmerId": {
+          "type": "string",
+          "description": "Firebase Auth UID of the farmer"
+        },
+        "cropName": {
+          "type": "string"
+        },
+        "quantity": {
+          "type": "number"
+        },
+        "unit": {
+          "type": "string"
+        },
+        "price": {
+          "type": "number"
+        },
+        "updatedAt": {
+          "type": "timestamp"
+        }
+      },
+      "required": ["farmerId", "cropName", "quantity", "unit", "price", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "users/{userId}": {
+      "schema": {
+        "$ref": "#/entities/User"
+      },
+      "description": "Stores user profiles"
+    },
+    "inventory/{itemId}": {
+      "schema": {
+        "$ref": "#/entities/InventoryItem"
+      },
+      "description": "Stores inventory items for all farmers"
+    }
+  }
+}
